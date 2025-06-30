@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alem Study — Образовательный центр нового поколения</title>
+    
+    <!-- Типографика от Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- GSAP для профессиональных анимаций -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+
+    <style>
+        /* ==========================================================================
+           1. Дизайн-система и переменные
+           ========================================================================== */
+        :root {
+            --primary-blue: #2563EB; /* Доверие, стабильность */
+            --primary-blue-dark: #1D4ED8;
+            --accent-orange: #F97316; /* Энергия, призыв к действию */
+            --accent-orange-dark: #EA580C;
+            --text-dark: #111827; /* Основной текст */
+            --text-light: #6B7280; /* Вторичный текст */
+            --bg-light: #F9FAFB;   /* Фон для секций */
+            --bg-white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 12px;
+        }
+
+        /* ==========================================================================
+           2. Базовые стили и сброс
+           ========================================================================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            width: min(90%, 1200px);
+            margin-inline: auto;
+        }
+
+        /* ==========================================================================
+           3. Компоненты UI (Кнопки, карточки)
+           ========================================================================== */
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: var(--border-radius);
+            font-weight: 700;
+            font-size: 16px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-blue-dark);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--accent-orange);
+            border: 2px solid var(--accent-orange);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--accent-orange);
+            color: white;
+        }
+
+        /* ==========================================================================
+           4. Секции сайта
+           ========================================================================== */
+        
+        /* --- Шапка --- */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        
+        .logo img { height: 45px; }
+
+        .nav-list {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+        
+        .nav-list a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .nav-list a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary-blue);
+            transition: width 0.3s ease;
+        }
+
+        .nav-list a:hover::after { width: 100%; }
+
+        /* --- Hero секция --- */
+        .hero {
+            min-height: 95vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.6)), url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=2070') center/cover no-repeat;
+            color: white;
+            padding-top: 100px;
+        }
+        
+        .hero .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .hero-text { max-width: 600px; }
+        
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 3.8rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .stat-item { text-align: center; }
+        .stat-item .number { font-size: 2.5rem; font-weight: 800; }
+        .stat-item .label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* --- Общие стили секций --- */
+        .section { padding: 80px 0; }
+        .section-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem auto;
+        }
+
+        /* --- Секция Услуг (Программы) --- */
+        .services { background-color: var(--bg-light); }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background-color: var(--bg-white);
+            border-radius: var(--border-radius);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .service-card .icon {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .service-card p {
+            color: var(--text-light);
+        }
+        
+        /* --- Секция Преимуществ --- */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .benefits-image img {
+            width: 100%;
+            border-radius: var(--border-radius);
+        }
+        
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .benefit-item .icon {
+            width: 48px;
+            flex-shrink: 0;
+        }
+        
+        .benefit-item h3 { font-size: 1.25rem; }
+        .benefit-item p { color: var(--text-light); }
+        
+        /* --- Секция Отзывов --- */
+        .testimonials {
+            background-color: var(--bg-light);
+        }
+
+        .testimonial-card {
+            background-color: var(--bg-white);
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            max-width: 800px;
+            margin: auto;
+            position: relative;
+            text-align: center;
+        }
+        
+        .testimonial-card .quote-icon {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .testimonial-text {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+        }
+
+        .testimonial-author img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 0.5rem auto;
+        }
+        .testimonial-author .name { font-weight: 700; }
+        .testimonial-author .info { font-size: 0.9rem; color: var(--text-light); }
+
+        /* --- Footer --- */
+        .footer {
+            background-color: var(--text-dark);
+            color: rgba(255,255,255,0.7);
+            padding: 4rem 0 2rem 0;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .footer-col h4 {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 0.5rem; }
+        .footer-col a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-col a:hover { color: white; }
+        
+        .footer-bottom {
+            padding-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* ==========================================================================
+           5. Анимации и медиа-запросы
+           ========================================================================== */
+        /* --- Классы для анимаций GSAP --- */
+        .fade-in { opacity: 0; }
+        .fade-in-up { opacity: 0; transform: translateY(40px); }
+
+        /* --- Адаптивность --- */
+        @media (max-width: 900px) {
+            .nav-list { display: none; /* Для простоты, можно добавить бургер-меню */ }
+            .hero .container { flex-direction: column; text-align: center; }
+            .hero-stats { justify-content: center; }
+            .benefits-grid { grid-template-columns: 1fr; }
+            .benefits-image { order: -1; }
+        }
+        @media (max-width: 600px) {
+            .header { flex-direction: column; gap: 1rem; }
+            .section-title { font-size: 2rem; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Шапка сайта -->
+    <header class="header">
+        <a href="#" class="logo">
+            <!-- Логотип Alem Study - используется нейтральная иконка -->
+            <img src="https://i.ibb.co/Lh5Rknk/alem-logo-placeholder.png" alt="Alem Study Logo">
+        </a>
+        <nav>
+            <ul class="nav-list">
+                <li><a href="#services">Программы</a></li>
+                <li><a href="#benefits">Преимущества</a></li>
+                <li><a href="#testimonials">Отзывы</a></li>
+                <li><a href="#footer">Контакты</a></li>
+            </ul>
+        </nav>
+        <a href="https://www.instagram.com/alemstudy_kz" target="_blank" class="btn btn-secondary">Instagram</a>
+    </header>
+
+    <main>
+
+        <!-- Hero секция -->
+        <section id="hero" class="hero">
+            <div class="container">
+                <div class="hero-text">
+                    <h1 class="hero-title fade-in">Твой путь к успеху начинается здесь</h1>
+                    <p class="hero-subtitle fade-in">Подготовка к ЕНТ, IELTS и поступлению в лучшие школы с гарантией результата. Инвестируй в свое будущее вместе с Alem Study.</p>
+                    <a href="#footer" class="btn btn-primary fade-in">Записаться на курс</a>
+                    <div class="hero-stats fade-in">
+                        <div class="stat-item">
+                            <span class="number">96%</span>
+                            <span class="label">Успешных поступлений</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="number">7+</span>
+                            <span class="label">Лет опыта</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="number">500+</span>
+                            <span class="label">Довольных учеников</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Секция Услуг -->
+        <section id="services" class="section services">
+            <div class="container">
+                <h2 class="section-title fade-in-up">Наши ключевые программы</h2>
+                <p class="section-subtitle fade-in-up">Мы разработали эффективные курсы, которые покрывают все потребности абитуриентов и школьников для достижения максимальных результатов.</p>
+                <div class="services-grid">
+                    <div class="service-card fade-in-up">
+                        <img src="https://img.icons8.com/external-flaticons-flat-flat-icons/64/external-exam-online-learning-flaticons-flat-flat-icons-2.png" alt="Иконка ЕНТ" class="icon">
+                        <h3>Подготовка к ЕНТ</h3>
+                        <p>Комплексный курс по всем предметам. Повышение балла в среднем на 30-40 пунктов.</p>
+                    </div>
+                    <div class="service-card fade-in-up">
+                        <img src="https://img.icons8.com/cute-clipart/64/certificate.png" alt="Иконка IELTS" class="icon">
+                        <h3>IELTS 7.0+</h3>
+                        <p>Интенсивная подготовка с носителем языка и фокусом на все 4 секции экзамена.</p>
+                    </div>
+                    <div class="service-card fade-in-up">
+                        <img src="https://img.icons8.com/external-flaticons-flat-flat-icons/64/external-school-high-school-flaticons-flat-flat-icons.png" alt="Иконка НИШ/БИЛ" class="icon">
+                        <h3>НИШ / БИЛ / РФМШ</h3>
+                        <p>Специализированные курсы для гарантированного поступления в лучшие школы страны.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Секция Преимуществ -->
+        <section id="benefits" class="section benefits">
+            <div class="container">
+                <div class="benefits-grid">
+                    <div class="benefits-text">
+                        <h2 class="section-title fade-in-up" style="text-align: left;">Почему нам доверяют<br>сотни учеников</h2>
+                        <div class="benefit-item fade-in-up">
+                            <img src="https://img.icons8.com/fluency/48/teacher.png" alt="Иконка преподавателя" class="icon">
+                            <div>
+                                <h3>Опытные преподаватели</h3>
+                                <p>Наша команда — это сертифицированные профессионалы с многолетним опытом.</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item fade-in-up">
+                            <img src="https://img.icons8.com/fluency/48/goal.png" alt="Иконка цели" class="icon">
+                            <div>
+                                <h3>Гарантия результата</h3>
+                                <p>Мы уверены в нашей методике, поэтому гарантируем результат или вернем деньги.</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item fade-in-up">
+                            <img src="https://img.icons8.com/fluency/48/group.png" alt="Иконка группы" class="icon">
+                            <div>
+                                <h3>Маленькие группы</h3>
+                                <p>Занятия в группах до 6 человек обеспечивают индивидуальный подход к каждому.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="benefits-image fade-in-up">
+                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=2070" alt="Студенты в классе">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Секция Отзывов -->
+        <section id="testimonials" class="section testimonials">
+            <div class="container">
+                 <h2 class="section-title fade-in-up">Что говорят наши выпускники</h2>
+                 <div class="testimonial-card fade-in-up">
+                     <div class="quote-icon">“</div>
+                     <p class="testimonial-text">Благодаря Alem Study я не только сдал IELTS на 7.5, но и по-настоящему полюбил английский язык. Атмосфера и подход преподавателей — на высшем уровне!</p>
+                     <div class="testimonial-author">
+                         <img src="https://images.unsplash.com/photo-1557862921-37829c790f19?auto=format&fit=crop&q=80&w=2071" alt="Фото ученика">
+                         <div class="name">Данияр Кенжебаев</div>
+                         <div class="info">Выпускник 2023, поступил в Nazarbayev University</div>
+                     </div>
+                 </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer" class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>О центре</h4>
+                    <ul>
+                        <li><a href="#benefits">Наши преимущества</a></li>
+                        <li><a href="#testimonials">Истории успеха</a></li>
+                        <li><a href="#">Вакансии</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Программы</h4>
+                    <ul>
+                        <li><a href="#services">Подготовка к ЕНТ</a></li>
+                        <li><a href="#services">Курсы IELTS</a></li>
+                        <li><a href="#services">Поступление в НИШ/БИЛ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Контакты</h4>
+                    <p>г. Астана, ул. Туркестан 14а/1<br>+7 (747) 231-XX-XX<br>info@alemstudy.kz</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Мы в соцсетях</h4>
+                    <p>Подписывайтесь на наш Instagram, чтобы быть в курсе новостей и акций.</p>
+                    <a href="https://www.instagram.com/alemstudy_kz" target="_blank" class="btn btn-primary" style="margin-top: 1rem;">Перейти в Instagram</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Alem Study. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Ждем загрузки DOM перед запуском скриптов
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Плавное появление элементов при скролле с помощью GSAP
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Анимация для простых fade-in
+            gsap.utils.toArray('.fade-in').forEach(el => {
+                gsap.fromTo(el, 
+                    { opacity: 0 }, 
+                    { opacity: 1, duration: 1.5, ease: 'power2.out' }
+                );
+            });
+            
+            // Анимация для fade-in-up (появление снизу)
+            gsap.utils.toArray('.fade-in-up').forEach(el => {
+                gsap.fromTo(el, 
+                    { opacity: 0, y: 50 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 85%', // Анимация начнется, когда элемент появится на 85% экрана
+                            toggleActions: 'play none none none'
+                        }
+                    }
+                );
+            });
+            
+            // Анимация для чисел в статистике
+            const stats = document.querySelectorAll('.stat-item .number');
+            stats.forEach(stat => {
+                const endValue = parseInt(stat.textContent, 10);
+                gsap.from(stat, {
+                    textContent: 0,
+                    duration: 2,
+                    ease: 'power1.inOut',
+                    snap: { textContent: 1 },
+                    scrollTrigger: {
+                        trigger: stat,
+                        start: 'top 90%'
+                    }
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
